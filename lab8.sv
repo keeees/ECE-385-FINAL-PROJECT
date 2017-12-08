@@ -49,8 +49,12 @@ module lab8( input               CLOCK_50,
     logic Reset_h, Clk,Reset_b;
     logic [15:0] keycode;
 	 logic [9:0] RandomX,RandomY;
-	 logic [9:0] BallX,BallY;
-	 logic [9:0] ball_size;
+	 logic [9:0] BallX,BallY,ballsize,xstep,ystep,progressx,progressy;
+	 logic gameover;
+	 logic [7:0] st_blue,st_green,st_red;
+	 logic [31:0] rscore,escore;
+	
+	 //logic [9:0] progress;
     
     assign Clk = CLOCK_50;
     always_ff @ (posedge Clk) begin
@@ -69,9 +73,11 @@ module lab8( input               CLOCK_50,
     logic [15:0] hpi_data_in, hpi_data_out;
     logic hpi_r, hpi_w, hpi_cs;
 	 logic [9:0] DrawX,DrawY;
-	 logic is_ball,is_collision;
+	 logic is_ball,is_collision1,is_collision2,is_aiball,is_eball1,is_eball2,is_eball3;
+	 logic  start_signal,gameover_signal,ingame_signal;
 	 //logic  is_rball;
 	 logic  is_rball[0:15];
+	 
     
     // Interface between NIOS II and EZ-OTG chip
     hpi_io_intf hpi_io_inst(
@@ -135,7 +141,9 @@ module lab8( input               CLOCK_50,
 	  .VGA_BLANK_N(VGA_BLANK_N),
 	  .VGA_SYNC_N(VGA_SYNC_N),              
 	  .DrawX(DrawX),      
-	  .DrawY(DrawY)       
+	  .DrawY(DrawY),
+	  .progressx(progressx),
+	  .progressy(progressy)
 	 );
     
     // Which signal should be frame_clk?
@@ -148,35 +156,113 @@ module lab8( input               CLOCK_50,
 	 .DrawY(DrawY),
 	 .keycode(keycode),
 	 .is_ball(is_ball),
-	 .is_collision(is_collision),
-	 //.Size(ball_size),
+	 .is_collision1(is_collision1),
+	 .is_collision2(is_collision2),
 	 .BallX(BallX),//
-	 .BallY(BallY)//
+	 .BallY(BallY),//
+	 .Ball_Size(ballsize),
+	 .Ball_X_Motion(xstep),
+	 .Ball_Y_Motion(ystep),
+	 .progressx(progressx),
+	 .progressy(progressy)
 	 );
+	 
+
+	 
+	 enemy_ball enemy(
+	 
+	 .Clk(Clk),         
+	 .Reset(Reset_b),       
+	 .frame_clk(VGA_VS),   
+	 .DrawX(DrawX),
+	 .DrawY(DrawY),
+	 .is_eball1(is_eball1),
+	 .is_eball2(is_eball2),
+	 .is_eball3(is_eball3),
+	 .gameover(gameover),//
+	 
+	 //.is_collision1(is_collision1),//
+	 //.is_collision2(is_collision2),//
+	 .X(BallX),
+	 .Y(BallY),
+	 .x_step(xstep),//speed of ball
+	 .y_step(ystep),//speed of ball
+	 .size(ballsize),// size of ball
+	 .escore(escore)
+	 );
+	 
+
     
+	 
+	  AIball aiball_instance(
+	 
+	 .Clk(Clk),         
+	 .Reset(Reset_b),       
+	 .frame_clk(VGA_VS),   
+	 .DrawX(DrawX),
+	 .DrawY(DrawY),
+	 .BallX(BallX),//
+	 .BallY(BallY),//
+	 //.is_collision(is_collision),
+	 .keycode(keycode),
+	 .is_aiball(is_aiball),
+	 .size(ballsize)
+	 );
+	 
     color_mapper color_instance(
+	 	.Reset(Reset_b),       
+	.frame_clk(VGA_VS),
 	 .is_ball(is_ball),  
 	 .is_rball(is_rball),
 	 .DrawX(DrawX),
 	 .DrawY(DrawY),      
 	 .VGA_R(VGA_R),
 	 .VGA_G(VGA_G),
-	 .VGA_B(VGA_B)
+	 .VGA_B(VGA_B),
+	 //.progress(progress),//
+	 .BallX(BallX),//
+	 .BallY(BallY),//
+	 .is_aiball(is_aiball),
+	 .is_eball1(is_eball1),
+	 .is_eball2(is_eball2),
+	 .is_eball3(is_eball3),
+	 .start_signal(start_signal),
+	 .gameover_signal(gameover_signal),
+	 .ingame_signal(ingame_signal)
+
 	 );
 	 random_ball randomball( .Clk(Clk),                // 50 MHz clock
                              .Reset(Reset_b),              // Active-high reset signal
                              .frame_clk(VGA_VS), // The clock indicating a new frame (~60Hz)
 					.is_ball(is_ball),
-					//.Size(ball_size),
+					
 					.randomx(RandomX),
 					.randomy(RandomY),
                .DrawX(DrawX) ,
-					.is_collision(is_collision),
+					.is_collision1(is_collision1),
+					.is_collision2(is_collision2),
                .DrawY(DrawY) ,					// Current pixel coordinates
                .is_rball(is_rball),            // Whether current pixel belongs to ball or backgr
 				   .BallX(BallX),//
-					.BallY(BallY)//
+					.BallY(BallY),//
+					.rscore(rscore)
               );
+				  
+		gamestate fsm(
+		      .Clk(Clk),
+				.keycode(keycode),//from keyboard
+				.gameover(gameover),
+				.Reset(Reset_b),//reset ball signal
+				.start_signal(start_signal),
+				.gameover_signal(gameover_signal),
+	         .ingame_signal(ingame_signal)
+
+				);				  
+	
+
+
+	
+				  
 	LFSRX lfsrx(
     .Clk(Clk),
     .Reset(Reset_b),
@@ -196,10 +282,24 @@ module lab8( input               CLOCK_50,
 //	 .is_collision(is_collision)
 //              );
     // Display keycode on hex display
-    HexDriver hex_inst_0 (keycode[3:0], HEX0);
-    HexDriver hex_inst_1 (keycode[7:4], HEX1);
-	 HexDriver hex_inst_2 (keycode[11:8], HEX2);
-    HexDriver hex_inst_3 (keycode[15:12], HEX3);
+	 
+	 logic [31:0] score;
+	 if(start_signal)
+	 score = 
+	 else if(ingame_signal)
+	 score = escore + rscore;
+	 else 
+	 score = 
+	 
+    HexDriver hex_inst_0 (score[7:0], HEX0);
+    HexDriver hex_inst_1 (score[15:8], HEX1);
+	 HexDriver hex_inst_2 (score[23:16], HEX2);
+    HexDriver hex_inst_3 (score[31:24], HEX3);
+	 
+	 HexDriver hex_inst_4 (ballsize[3:0], HEX4);
+    HexDriver hex_inst_5 (keycode[7:4], HEX5);
+	 HexDriver hex_inst_6 (keycode[11:8], HEX6);
+    HexDriver hex_inst_7 (keycode[15:12], HEX7);
     
     /**************************************************************************************
         ATTENTION! Please answer the following quesiton in your lab report! Points will be allocated for the answers!

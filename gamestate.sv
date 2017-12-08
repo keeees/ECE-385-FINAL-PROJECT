@@ -1,13 +1,14 @@
 module gamestate(
+				input         Clk,
 				input [15:0] keycode,//from keyboard
-				input eaten,//eaten by enemy ball
+				input gameover,//eaten by enemy ball
 				input Reset,//reset ball signal
 				output logic start_signal,// start signal active high 	
 				output logic gameover_signal,// gameover signal active high
 				output logic ingame_signal//ingame signal active high
-				};
+				);
 				
-	enum logic [2:0] {  start,gameover,ingame
+	enum logic [2:0] { start,gameover_state,ingame
 									}   State, Next_state;   // Internal state logic
         
     always_ff @ (posedge Clk)
@@ -29,12 +30,12 @@ module gamestate(
                     Next_state = ingame;
 				end 
 				ingame : begin
-					if (eaten)
-						Next_state = gameover;
+					if (gameover)
+						Next_state = gameover_state;
 				end 
 				
-				gameover : begin
-					if(keycode = 16'h1A07)//game restart if press wd
+				gameover_state : begin
+					if(keycode == 16'h1A07)//game restart if press wd
 						Next_state = start;
 				end 
 						
@@ -49,9 +50,10 @@ module gamestate(
 			case(State)
 				start : start_signal = 1;
 				ingame : ingame_signal = 1;
-				gameover : gameover_signal = 1;
+				gameover_state : gameover_signal = 1;
 				default : ;
 			endcase 
+end			
 endmodule
             
 	

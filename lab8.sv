@@ -276,12 +276,11 @@ module lab8( input               CLOCK_50,
 
 	 .start_signal(start_signal),
 	 .gameover_signal(gameover_signal),
-	 .ingame_signal(ingame_signal)
+	 .ingame_signal(ingame_signal),
 	 //mouse
 	 .mouse_x(mouse_x),
 	 .mouse_y(mouse_y),
-	 .leftButton(leftButton),
-	 .rightButton(rightButton)
+
 	 );
 	 random_ball randomball( .Clk(Clk),                // 50 MHz clock
                              .Reset(Reset_b),              // Active-high reset signal
@@ -308,7 +307,11 @@ module lab8( input               CLOCK_50,
 				.Reset(Reset_b),//reset ball signal
 				.start_signal(start_signal),
 				.gameover_signal(gameover_signal),
-	         .ingame_signal(ingame_signal)
+	         .ingame_signal(ingame_signal),
+		   	.mouse_x(mouse_x),
+				.mouse_y(mouse_y),
+				.leftButton(leftButton),
+				.rightButton(rightButton)
 
 				);				  
 	

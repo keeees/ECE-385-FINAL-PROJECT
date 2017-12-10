@@ -16,7 +16,7 @@
 // color_mapper: Decide which color to be output to VGA for each pixel.
 
 module  color_mapper ( input        frame_clk,Reset,
-							  input        is_ball,is_aiball,is_eball1,is_eball2,is_eball3            // Whether current pixel belongs to ball 
+							  input        is_ball,is_aiball,is_eball1,is_eball2,is_eball3,            // Whether current pixel belongs to ball 
 							  input 			is_rball[0:15],		//   or background (computed in ball.sv)
                        input        [9:0] DrawX, DrawY,     // Current pixel coordinates
                        output logic [7:0] VGA_R, VGA_G, VGA_B, // VGA RGB output
@@ -56,7 +56,7 @@ begin
 		begin
 		  if (is_ball == 1'b1) 
         begin
-            // White ball
+		  
 //            Red = 8'hff;
 //            Green = 8'hff;
 //            Blue = 8'hff;
@@ -68,27 +68,37 @@ begin
         end
 		  else if (is_aiball == 1'b1) 
         begin
-            Red = 8'h255;
-            Green = 8'h255;
-            Blue = 8'h255;
+
+            Red = ball_red;
+				Green = ball_green;
+				Blue = ball_blue;
         end
 		  else if (is_eball1 == 1'b1) 
         begin
-            Red = 8'h2;
-            Green = 8'h99;
-            Blue = 8'h103;
+            Red = 8'd255;
+            Green = 8'd255;
+            Blue = 8'd0;
+//				Red = ball_red;
+//				Green = ball_green;
+//				Blue = ball_blue;
         end
 		  else if (is_eball2 == 1'b1) 
         begin
-            Red = 8'hee;
-            Green = 8'ha6;
-            Blue = 8'h6f;
+            Red = 8'd255;
+            Green = 8'd0;
+            Blue = 8'd255;
+//				Red = ball_red;
+//				Green = ball_green;
+//				Blue = ball_blue;
         end
 		  else if (is_eball3 == 1'b1) 
         begin
-            Red = 8'h56;
-            Green = 8'h46;
-            Blue = 8'h2;
+            Red = 8'd0;
+            Green = 8'd255;
+            Blue = 8'd255;
+//				Red = ball_red;
+//				Green = ball_green;
+//				Blue = ball_blue;
         end
 		  else if(is_rball[0] == 1'b1)
 		  begin
@@ -190,59 +200,62 @@ begin
         else 
         begin
             //Background with nice color gradient
-            Red = b_red;
-            Green = b_green;
-            Blue = b_blue;
-//				Red = 8'h00;
-//            Green = 8'h00;
-//            Blue = 8'h00;
+//            Red = b_red;
+//            Green = b_green;
+//            Blue = b_blue;
+				Red = 8'h80;
+            Green = 8'h80;
+            Blue = 8'h80;
         end
 	end
 	else if(start_signal)
 	begin
-	Red = st_red;
-   Green = st_green;
-   Blue = st_blue;
+		Red = 8'h66;
+      Green = 8'h00;
+      Blue = 8'hff;
+//	Red = st_red;
+//   Green = st_green;
+//   Blue = st_blue;
 	end
 	
 	else 
 
 	begin
-	Red = go_red;
-   Green = go_green;
-   Blue = go_blue;
-//			Red = 8'h00;
-//       Green = 8'h00;
-//       Blue = 8'h00;
+//	Red = go_red;
+//   Green = go_green;
+//   Blue = go_blue;
+			Red = 8'h00;
+       Green = 8'h00;
+       Blue = 8'h00;
 	end
 	
 end
 
-	background background(
-	.x(DrawX),
-	.y(DrawY),
-	.R(b_red),
-	.G(b_green),
-	.B(b_blue)
-	);	  
+//	background background(
+//	.x(DrawX),
+//	.y(DrawY),
+//	.R(b_red),
+//	.G(b_green),
+//	.B(b_blue)
+//	);	  
 	
-	gameover gameover(
-	.x(DrawX),
-	.y(DrawY),
-	.R(go_red),
-	.G(go_green),
-	.B(go_blue)
-	);	
+//	gameover gameover(
+//	.x(DrawX),
+//	.y(DrawY),
+//	.R(go_red),
+//	.G(go_green),
+//	.B(go_blue)
+//	);	
 	
-	start start(
-	.Reset(Reset),       
-	.frame_clk(frame_clk), 
-	.x(DrawX),
-	.y(DrawY),
-	.R(st_red),
-	.G(st_green),
-	.B(st_blue)
-	);	
+//	start start(
+//	.Reset(Reset),       
+//	.frame_clk(frame_clk), 
+//	.x(DrawX),
+//	.y(DrawY),
+//	.R(st_red),
+//	.G(st_green),
+//	.B(st_blue)
+//	);	
 
 	
 	ball_ani ball_ani(

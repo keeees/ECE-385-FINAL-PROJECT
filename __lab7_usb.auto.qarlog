@@ -1,0 +1,62 @@
+Quartus II Archive log --	C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/__lab7_usb.auto.qarlog
+
+Archive:	C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/__lab7_usb.auto.qar
+Date:		Thu Nov 16 17:18:36 2017
+Quartus II 64-Bit		15.0.0 Build 145 04/22/2015 SJ Web Edition
+
+	=========== Files Selected: ===========
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/a_dpfifo_q131.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/a_fefifo_7cf.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/altsyncram_0891.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/altsyncram_0fh1.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/altsyncram_86d1.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/altsyncram_d1h1.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/altsyncram_e1h1.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/altsyncram_gu14.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/altsyncram_il91.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/altsyncram_k124.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/altsyncram_moc1.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/altsyncram_r1m1.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/altsyncram_veh1.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/asrt_auto_stripped.stp
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/cmpr_ngc.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/cmpr_qgc.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/cmpr_rgc.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/cmpr_ugc.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/cntr_1ob.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/cntr_23j.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/cntr_5ii.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/cntr_do7.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/cntr_egi.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/cntr_hgi.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/cntr_i6j.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/cntr_l6j.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/decode_dvf.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/dpram_nl21.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/lab8.cbx.xml
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/lab8.qpf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/mult_2at.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/mult_j8t.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/mult_p5t.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/mux_ssc.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/mux_usc.tdf
+C:/Users/kesun5/Downloads/Lab8_provided-20171116T224654Z-001/Lab8_provided/db/scfifo_jr21.tdf
+Color_Mapper.sv
+HexDriver.sv
+PLLJ_PLLSPE_INFO.txt
+VGA_controller.sv
+__lab7_usb.auto.qarlog
+asrt.stp
+ball.sv
+c:/altera/15.0/quartus/bin64/assignment_defaults.qdf
+hpi_io_intf.sv
+lab7_usb.qsf
+lab8.sv
+lab8_assignment_defaults.qdf
+lab8_tmp_archive.qarlog
+nios_system.qsys
+signaltabb.stp
+	======= Total: 51 files to archive =======
+
+	================ Status: ===============
+All files archived successfully.

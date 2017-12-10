@@ -14,24 +14,24 @@ module ball_ani(
 		pixel = matrix[x][y];
 		case(pixel)
 		2'd0: begin
-			R = 8'd66;
-			G = 8'd99;
-			B = 8'd22;
+			R = 8'd224;
+			G = 8'd224;
+			B = 8'd224;
 		end
 		2'd1: begin
-			R = 8'd150;
-			G = 8'd30;
-			B = 8'd90;
+			R = 8'd255;
+			G = 8'd128;
+			B = 8'd0;
 		end
 		2'd2: begin
-			R = 8'd200;
-			G = 8'd88;
-			B = 8'd150;
+			R = 8'd0;
+			G = 8'd0;
+			B = 8'd255;
 		end
 		2'd3: begin
 			R = 8'd100;
-			G = 8'd150;
-			B = 8'd10;
+			G = 8'd100;
+			B = 8'd1;
 		end
 		
 	endcase

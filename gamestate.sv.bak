@@ -25,7 +25,7 @@ module gamestate(
      
         unique case (State)
             start : begin 
-                if (keycode == 16'h071A) //game start!
+                if (keycode == 16'h071A) //game start! if press dw
                     Next_state = ingame;
 				end 
 				ingame : begin
@@ -34,7 +34,7 @@ module gamestate(
 				end 
 				
 				gameover : begin
-					if(keycode = 16'h1A07)
+					if(keycode = 16'h1A07)//game restart if press wd
 						Next_state = start;
 				end 
 						

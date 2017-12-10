@@ -50,9 +50,12 @@ module lab8( input               CLOCK_50,
     logic [15:0] keycode;
 	 logic [9:0] RandomX,RandomY;
 	 logic [9:0] BallX,BallY,ballsize,xstep,ystep,progressx,progressy;
-	 logic gameover;
+	 logic gameover1,gameover2,gameover3;
 	 logic [7:0] st_blue,st_green,st_red;
-	 logic [31:0] rscore,escore;
+	 logic [15:0] escore,rscore,escore1,escore2,escore3;
+	 
+	 assign escore = escore1 + escore2 + escore3;
+	 assign gameover = gameover1 || gameover2 || gameover3;
 	
 	 //logic [9:0] progress;
     
@@ -149,8 +152,10 @@ module lab8( input               CLOCK_50,
     // Which signal should be frame_clk?
     ball ball_instance(
 	 
+	 .start_signal(start_signal),
 	 .Clk(Clk),         
-	 .Reset(Reset_b),       
+	 .Reset(Reset_b), 
+	 .gameover(gameover),	 
 	 .frame_clk(VGA_VS),   
 	 .DrawX(DrawX),
 	 .DrawY(DrawY),
@@ -169,17 +174,36 @@ module lab8( input               CLOCK_50,
 	 
 
 	 
-	 enemy_ball enemy(
+	 enemy_ball1 enemy1(
 	 
 	 .Clk(Clk),         
 	 .Reset(Reset_b),       
 	 .frame_clk(VGA_VS),   
 	 .DrawX(DrawX),
 	 .DrawY(DrawY),
-	 .is_eball1(is_eball1),
-	 .is_eball2(is_eball2),
-	 .is_eball3(is_eball3),
-	 .gameover(gameover),//
+	 .is_eball(is_eball1),
+	 .gameover(gameover1),//
+	  .start_signal(start_signal),
+	 //.is_collision1(is_collision1),//
+	 //.is_collision2(is_collision2),//
+	 .X(BallX),
+	 .Y(BallY),
+	 .x_step(xstep),//speed of ball
+	 .y_step(ystep),//speed of ball
+	 .size(ballsize),// size of ball
+	 .escore(escore1)
+	 );
+	 
+	 
+	 enemy_ball2 enemy2(
+	 
+	 .Clk(Clk),         
+	 .Reset(Reset_b),       
+	 .frame_clk(VGA_VS),   
+	 .DrawX(DrawX),
+	 .DrawY(DrawY),
+	 .is_eball(is_eball2),
+	 .gameover(gameover2),//
 	 
 	 //.is_collision1(is_collision1),//
 	 //.is_collision2(is_collision2),//
@@ -188,9 +212,29 @@ module lab8( input               CLOCK_50,
 	 .x_step(xstep),//speed of ball
 	 .y_step(ystep),//speed of ball
 	 .size(ballsize),// size of ball
-	 .escore(escore)
+	  .start_signal(start_signal),
+	 .escore(escore2)
 	 );
 	 
+	 enemy_ball3 enemy3(
+	 
+	 .Clk(Clk),         
+	 .Reset(Reset_b),       
+	 .frame_clk(VGA_VS),   
+	 .DrawX(DrawX),
+	 .DrawY(DrawY),
+	 .is_eball(is_eball3),
+	 .gameover(gameover3),//
+	 .start_signal(start_signal),
+	 //.is_collision1(is_collision1),//
+	 //.is_collision2(is_collision2),//
+	 .X(BallX),
+	 .Y(BallY),
+	 .x_step(xstep),//speed of ball
+	 .y_step(ystep),//speed of ball
+	 .size(ballsize),// size of ball
+	 .escore(escore3)
+	 );
 
     
 	 
@@ -226,6 +270,7 @@ module lab8( input               CLOCK_50,
 	 .is_eball1(is_eball1),
 	 .is_eball2(is_eball2),
 	 .is_eball3(is_eball3),
+
 	 .start_signal(start_signal),
 	 .gameover_signal(gameover_signal),
 	 .ingame_signal(ingame_signal)
@@ -245,7 +290,8 @@ module lab8( input               CLOCK_50,
                .is_rball(is_rball),            // Whether current pixel belongs to ball or backgr
 				   .BallX(BallX),//
 					.BallY(BallY),//
-					.rscore(rscore)
+					.rscore(rscore),
+					 .start_signal(start_signal)
               );
 				  
 		gamestate fsm(
@@ -283,23 +329,100 @@ module lab8( input               CLOCK_50,
 //              );
     // Display keycode on hex display
 	 
-	 logic [31:0] score;
+	 logic [15:0] score,score_next;
+	 
+//	 always_ff @ (posedge Clk)
+//    begin
+//		if(Reset)
+//			score <= 0;
+//		else if (score[3:0] == 4'b1010)
+//			begin
+//				score <= score +1;
+	 always_comb
+	 begin
+	 
 	 if(start_signal)
-	 score = 
+	 begin
+		score = 16'b0;
+	 end
 	 else if(ingame_signal)
-	 score = escore + rscore;
+	 begin
+		score = escore + rscore;
+		
+		if(score == 16'h000A)
+			score = 16'h0010;
+		else if (score == 16'h000b)
+			score = 16'h0011;
+		else if (score == 16'h000c)
+			score = 16'h0012;
+		else if (score == 16'h000d)
+			score = 16'h0013;
+		else if (score == 16'h000E)
+			score = 16'h0014;
+		else if (score == 16'h000F)
+			score = 16'h0015;
+		else if (score == 16'h0010)
+			score = 16'h0016;
+		else if (score == 16'h0011)
+			score = 16'h0017;
+		else if (score == 16'h0012)
+			score = 16'h0018;
+		else if (score == 16'h0013)
+			score = 16'h0019;
+		else if (score == 16'h0014)
+			score = 16'h0020;
+		else if (score == 16'h0015)
+			score = 16'h0021;
+		else if (score == 16'h0016)
+			score = 16'h0022;
+		else if (score == 16'h0017)
+			score = 16'h0023;
+		else if (score == 16'h0018)
+			score = 16'h0024;
+		else if (score == 16'h0019)
+			score = 16'h0025;
+		else if (score == 16'h001A)
+			score = 16'h0026;
+		else if (score == 16'h001b)
+			score = 16'h0027;
+		else if (score == 16'h001c)
+			score = 16'h0028;
+		else if (score == 16'h001e)
+			score = 16'h0029;
+		else if (score == 16'h001d)
+			score = 16'h0030;
+		else if (score == 16'h001E)
+			score = 16'h0031;
+		else if (score == 16'h001F)
+			score = 16'h0032;
+		else if (score == 16'h0020)
+			score = 16'h0033;
+		else if (score == 16'h0021)
+			score = 16'h0034;
+		else if (score == 16'h0022)
+			score = 16'h0035;
+		else if (score == 16'h0023)
+			score = 16'h0036;
+		else if (score == 16'h0024)
+			score = 16'h0037;
+		else if (score == 16'h0025)
+			score = 16'h0038;
+		else if (score == 16'h0026)
+			score = 16'h0039;
+		else if (score == 16'h0027)
+			score = 16'h0040;
+	 end	
+	 
 	 else 
-	 score = 
+	 score = 16'b1000100010001000;
 	 
-    HexDriver hex_inst_0 (score[7:0], HEX0);
-    HexDriver hex_inst_1 (score[15:8], HEX1);
-	 HexDriver hex_inst_2 (score[23:16], HEX2);
-    HexDriver hex_inst_3 (score[31:24], HEX3);
+	 end
 	 
-	 HexDriver hex_inst_4 (ballsize[3:0], HEX4);
-    HexDriver hex_inst_5 (keycode[7:4], HEX5);
-	 HexDriver hex_inst_6 (keycode[11:8], HEX6);
-    HexDriver hex_inst_7 (keycode[15:12], HEX7);
+    HexDriver hex_inst_0 (score[3:0], HEX0);
+    HexDriver hex_inst_1 (score[7:4], HEX1);
+	 HexDriver hex_inst_2 (score[11:8], HEX2);
+    HexDriver hex_inst_3 (score[15:12], HEX3);
+	 
     
     /**************************************************************************************
         ATTENTION! Please answer the following quesiton in your lab report! Points will be allocated for the answers!

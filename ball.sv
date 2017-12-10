@@ -22,6 +22,8 @@ module  ball ( input         Clk,                // 50 MHz clock
 					input [15:0]  keycode,
 					input 		  is_collision1,
 					input 		  is_collision2,
+					input          gameover,
+					input start_signal,
                output logic  is_ball,             // Whether current pixel belongs to ball or background 
 					//output logic [9:0]  Size,
 					//output logic [9:0] progress,					//ball size
@@ -87,8 +89,22 @@ module  ball ( input         Clk,                // 50 MHz clock
 				progressx <= 0;
 				progressy <= 0;
         end
+		  else if (frame_clk_rising_edge && gameover)        // Update only at rising edge of frame clock
+        begin
+            Ball_X_Pos <= Ball_X_Center;  
+            Ball_Y_Pos <= Ball_Y_Center;
+				Ball_X_Step <= 3;
+            Ball_Y_Step <= 3;
+				Ball_X_Motion <= 10'd0;
+            Ball_Y_Motion <= 10'd0;
+				
+				Ball_Size <= 5;
+				progressx <= 0;
+				progressy <= 0;
+			end
 		  else if(frame_clk_rising_edge && is_collision1)
 		  begin
+		  
 				Ball_X_Pos <= Ball_X_Pos_in;
             Ball_Y_Pos <= Ball_Y_Pos_in;
             Ball_X_Motion <= Ball_X_Motion_in;
@@ -124,7 +140,23 @@ module  ball ( input         Clk,                // 50 MHz clock
 				Ball_Size <= Ball_Size - 1;
 				
   		  end
-        else if (frame_clk_rising_edge)        // Update only at rising edge of frame clock
+		  
+		  else if(frame_clk_rising_edge && start_signal)
+		  begin
+            Ball_X_Pos <= Ball_X_Center;  
+            Ball_Y_Pos <= Ball_Y_Center;
+				Ball_X_Step <= 3;
+            Ball_Y_Step <= 3;
+				Ball_X_Motion <= 10'd0;
+            Ball_Y_Motion <= 10'd0;
+				
+				Ball_Size <= 5;
+				progressx <= 0;
+				progressy <= 0;
+				
+  		  end
+				
+		  else if (frame_clk_rising_edge)        // Update only at rising edge of frame clock
         begin
             Ball_X_Pos <= Ball_X_Pos_in;
             Ball_Y_Pos <= Ball_Y_Pos_in;

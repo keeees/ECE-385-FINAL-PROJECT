@@ -7,7 +7,7 @@ module background(
 						);
 	logic [2:0] pixel;
 	//logic [0:][0:499][0:2] matrix;
-	logic [0:9][0:9][0:2] matrix;
+	logic [0:499][0:499][0:2] matrix;
 	always_comb 
 	begin
 	R=8'h0;

@@ -94,11 +94,7 @@ module start(	input  frame_clk,Reset ,
 			G = 8'd0;
 			B = 8'd0;
 		end
-		bkgd:begin
-		  R = 8'h3f; 
-        G = 8'h00;
-        B = 8'h7f - {1'b0, x[9:3]};
-		end
+
 		
 		default:
 		begin

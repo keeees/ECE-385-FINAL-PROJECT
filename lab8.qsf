@@ -680,6 +680,9 @@ set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[31] -
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_SAMPLE_DEPTH=128" -section_id auto_signaltap_0
 set_global_assignment -name FLOW_ENABLE_POWER_ANALYZER ON
 set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE "12.5 %"
+set_global_assignment -name SLD_FILE db/asrt_auto_stripped.stp
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name SYSTEMVERILOG_FILE mouse_interface_IP.sv
 set_global_assignment -name SYSTEMVERILOG_FILE matrix.sv
 set_global_assignment -name SYSTEMVERILOG_FILE gamestate.sv
 set_global_assignment -name SYSTEMVERILOG_FILE enemy_ball.sv
@@ -698,5 +701,3 @@ set_global_assignment -name SYSTEMVERILOG_FILE AIball.sv
 set_global_assignment -name SYSTEMVERILOG_FILE gameover.sv
 set_global_assignment -name SYSTEMVERILOG_FILE start.sv
 set_global_assignment -name SYSTEMVERILOG_FILE "ball-ani.sv"
-set_global_assignment -name SLD_FILE db/asrt_auto_stripped.stp
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -33,6 +33,8 @@ module lab8( input               CLOCK_50,
                                  OTG_WR_N,     //CY7C67200 Read
                                  OTG_RST_N,    //CY7C67200 Reset
              input               OTG_INT,      //CY7C67200 Interrupt
+				 inout 					PS2_CLK, PS2_DAT,
+
              // SDRAM Interface for Nios II Software
              output logic [12:0] DRAM_ADDR,    //SDRAM Address 13 Bits
              inout  wire  [31:0] DRAM_DQ,      //SDRAM Data 32 Bits
@@ -50,10 +52,11 @@ module lab8( input               CLOCK_50,
     logic [15:0] keycode;
 	 logic [9:0] RandomX,RandomY;
 	 logic [9:0] BallX,BallY,ballsize,xstep,ystep,progressx,progressy;
+	 logic [9:0] mouse_x,mouse_y;
 	 logic gameover1,gameover2,gameover3;
 	 logic [7:0] st_blue,st_green,st_red;
 	 logic [15:0] escore,rscore,escore1,escore2,escore3;
-	 
+	 logic rightButton,leftButton;
 	 assign escore = escore1 + escore2 + escore3;
 	 assign gameover = gameover1 || gameover2 || gameover3;
 	
@@ -274,7 +277,11 @@ module lab8( input               CLOCK_50,
 	 .start_signal(start_signal),
 	 .gameover_signal(gameover_signal),
 	 .ingame_signal(ingame_signal)
-
+	 //mouse
+	 .mouse_x(mouse_x),
+	 .mouse_y(mouse_y),
+	 .leftButton(leftButton),
+	 .rightButton(rightButton)
 	 );
 	 random_ball randomball( .Clk(Clk),                // 50 MHz clock
                              .Reset(Reset_b),              // Active-high reset signal
@@ -319,6 +326,20 @@ module lab8( input               CLOCK_50,
     .Reset(Reset_b),
     .RandomY(RandomY) 
     );
+	 //mouse 
+	 
+	 Mouse_interface mouse(	
+				.CLOCK_50(Clk),
+				.KEY(KEY),
+				.PS2_CLK(PS2_CLK),
+				.PS2_DAT(PS2_DAT),
+				.leftButton(leftButton),
+				//middleButton, 
+				.rightButton(rightButton),
+				.cursorX(mouse_x), 
+				.cursorY(mouse_y)
+				);
+ 
  
 //	collision collision1( .Clk(Clk),                // 50 MHz clock
 //                             .Reset(Reset),              // Active-high reset signal

@@ -22,9 +22,12 @@ module  color_mapper ( input        frame_clk,Reset,
                        output logic [7:0] VGA_R, VGA_G, VGA_B, // VGA RGB output
       					 
 							  input [9:0]  BallX,BallY,
-							  input start_signal,// start signal active high 	
+							  input start_signa l,// start signal active high 	
 							  input gameover_signal,// gameover signal active high
-							  input ingame_signal//ingame signal active high
+							  input ingame_signal,//ingame signal active high
+							  //mouse 
+							  input [9:0] mouse_x,mouse_y,
+							  input leftButton,rightButton
 							  
                       );
     
@@ -52,6 +55,12 @@ module  color_mapper ( input        frame_clk,Reset,
     // Assign color based on is_ball signal
     always_comb
 begin
+		if(DrawX > mouse_x - 10'd3 && DrawX < mouse_x + 10'd3 && DrawY < mouse_y + 10'd3 && DrawY > mouse_y - 10'd3)
+		  begin
+				Red = 8'hcc;
+				Green = 8'hcc;
+				Blue = 8'hcc;
+		  end
 		if(ingame_signal)
 		begin
 		  if (is_ball == 1'b1) 

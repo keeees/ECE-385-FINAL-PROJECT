@@ -27,9 +27,12 @@ module  VGA_controller (input              Clk,         // 50 MHz clock
                                            Reset,       // Active-high reset signal
                         output logic       VGA_HS,      // Horizontal sync pulse.  Active low
                                            VGA_VS,      // Vertical sync pulse.  Active low
+														 
                         input              VGA_CLK,     // 25 MHz VGA clock input
                         output logic       VGA_BLANK_N, // Blanking interval indicator.  Active low.
                                            VGA_SYNC_N,  // Composite Sync signal.  Active low.  We don't use it in this lab,
+								input [9:0]  progressx,
+								input [9:0]  progressy,
                                                         // but the video DAC on the DE2 board requires an input for it.
                         output logic [9:0] DrawX,       // horizontal coordinate
                                            DrawY        // vertical coordinate
@@ -39,14 +42,16 @@ module  VGA_controller (input              Clk,         // 50 MHz clock
     // 525 lines per frame (including front/back porch)
     parameter [9:0] H_TOTAL = 10'd800;
     parameter [9:0] V_TOTAL = 10'd525;
+	 
+	
     
     logic VGA_HS_in, VGA_VS_in, VGA_BLANK_N_in;
     logic [9:0] h_counter, v_counter;
     logic [9:0] h_counter_in, v_counter_in;
     
     assign VGA_SYNC_N = 1'b0;
-    assign DrawX = h_counter;
-    assign DrawY = v_counter;
+    assign DrawX = h_counter + progressx;
+    assign DrawY = v_counter + progressy;
     
     // VGA control signals
     always_ff @ (posedge VGA_CLK)
@@ -58,11 +63,13 @@ module  VGA_controller (input              Clk,         // 50 MHz clock
             VGA_BLANK_N <= 1'b0;
             h_counter <= 10'd0;
             v_counter <= 10'd0;
+				
         end
         else
         begin
             VGA_HS <= VGA_HS_in;
             VGA_VS <= VGA_VS_in;
+				
             VGA_BLANK_N <= VGA_BLANK_N_in;
             h_counter <= h_counter_in;
             v_counter <= v_counter_in;

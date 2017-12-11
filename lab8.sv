@@ -25,6 +25,12 @@ module lab8( input               CLOCK_50,
                                  VGA_BLANK_N,  //VGA Blank signal
                                  VGA_VS,       //VGA virtical sync signal
                                  VGA_HS,       //VGA horizontal sync signal
+					output			 		AUD_ADCLRCK, // Audio ADC LR Clock
+					input	 					AUD_ADCDAT,  // Audio ADC Data
+					output 				  	AUD_DACLRCK, // Audio DAC LR Clock
+					output 					AUD_DACDAT,  // Audio DAC Data
+					inout	 					AUD_BCLK,    // Audio Bit-Stream Clock
+					output 					AUD_XCK,     // Audio Chip Clock
              // CY7C67200 Interface
              inout  wire  [15:0] OTG_DATA,     //CY7C67200 Data bus 16 Bits
              output logic [1:0]  OTG_ADDR,     //CY7C67200 Address 2 Bits
@@ -33,6 +39,8 @@ module lab8( input               CLOCK_50,
                                  OTG_WR_N,     //CY7C67200 Read
                                  OTG_RST_N,    //CY7C67200 Reset
              input               OTG_INT,      //CY7C67200 Interrupt
+				 inout 					PS2_CLK, PS2_DAT,
+
              // SDRAM Interface for Nios II Software
              output logic [12:0] DRAM_ADDR,    //SDRAM Address 13 Bits
              inout  wire  [31:0] DRAM_DQ,      //SDRAM Data 32 Bits
@@ -46,11 +54,23 @@ module lab8( input               CLOCK_50,
                                  DRAM_CLK      //SDRAM Clock
                     );
     
-    logic Reset_h, Clk,Reset_b;
+    logic Reset_h, Clk,Reset_b,CLOCK_27;
     logic [15:0] keycode;
 	 logic [9:0] RandomX,RandomY;
-	 logic [9:0] BallX,BallY;
-	 logic [9:0] ball_size;
+	 logic [9:0] BallX,BallY,ballsize,xstep,ystep,progressx,progressy;
+	 logic [9:0] mouse_x,mouse_y;
+	 logic gameover1,gameover2,gameover3,gameover;
+	 logic [7:0] st_blue,st_green,st_red;
+	 logic [15:0] escore,rscore,escore1,escore2,escore3;
+	 logic rightButton,leftButton;
+	 assign escore = escore1 + escore2 + escore3;
+	 assign gameover = gameover1 || gameover2 || gameover3;
+	 logic INIT,INIT_FINISH,adc_full,data_over;
+	 logic [15:0] LDATA,RDATA;
+	 
+	 assign INIT =1;
+	
+	 //logic [9:0] progress;
     
     assign Clk = CLOCK_50;
     always_ff @ (posedge Clk) begin
@@ -69,9 +89,12 @@ module lab8( input               CLOCK_50,
     logic [15:0] hpi_data_in, hpi_data_out;
     logic hpi_r, hpi_w, hpi_cs;
 	 logic [9:0] DrawX,DrawY;
-	 logic is_ball,is_collision;
+	 logic is_ball,is_collision1,is_collision2,is_aiball,is_eball1,is_eball2,is_eball3,is_collision_1,is_collision_2,is_collision_3;
+	 logic  start_signal,gameover_signal,ingame_signal;
 	 //logic  is_rball;
 	 logic  is_rball[0:15];
+	 logic [5:0] counter;
+	 
     
     // Interface between NIOS II and EZ-OTG chip
     hpi_io_intf hpi_io_inst(
@@ -94,7 +117,8 @@ module lab8( input               CLOCK_50,
     );
 	 // You need to make sure that the port names here match the ports in Qsys-generated codes.
      nios_system nios_system(
-                             .clk_clk(Clk),         
+                             .clk_clk(Clk),   
+									  .clk_1_clk(CLOCK_27),
                              .reset_reset_n(1'b1),    // Never reset NIOS
                              .sdram_wire_addr(DRAM_ADDR), 
                              .sdram_wire_ba(DRAM_BA),   
@@ -135,48 +159,247 @@ module lab8( input               CLOCK_50,
 	  .VGA_BLANK_N(VGA_BLANK_N),
 	  .VGA_SYNC_N(VGA_SYNC_N),              
 	  .DrawX(DrawX),      
-	  .DrawY(DrawY)       
+	  .DrawY(DrawY),
+	  .progressx(progressx),
+	  .progressy(progressy)
 	 );
     
     // Which signal should be frame_clk?
     ball ball_instance(
+	 
+	 .start_signal(start_signal),
+	 .Clk(Clk),         
+	 .Reset(Reset_b), 
+	 .gameover(gameover),	 
+	 .frame_clk(VGA_VS),   
+	 .DrawX(DrawX),
+	 .DrawY(DrawY),
+	 .keycode(keycode),
+	 .is_ball(is_ball),
+	 .is_collision1(is_collision1),
+	 .is_collision2(is_collision2),
+	 .BallX(BallX),//
+	 .BallY(BallY),//
+	 .Ball_Size(ballsize),
+	 .Ball_X_Motion(xstep),
+	 .Ball_Y_Motion(ystep),
+	 .progressx(progressx),
+	 .progressy(progressy)
+	 );
+	 
+
+	 
+	 enemy_ball1 enemy1(
 	 
 	 .Clk(Clk),         
 	 .Reset(Reset_b),       
 	 .frame_clk(VGA_VS),   
 	 .DrawX(DrawX),
 	 .DrawY(DrawY),
-	 .keycode(keycode),
-	 .is_ball(is_ball),
-	 .is_collision(is_collision),
-	 //.Size(ball_size),
-	 .BallX(BallX),//
-	 .BallY(BallY)//
+	 .is_eball(is_eball1),
+	 .gameover(gameover1),//
+	  .start_signal(start_signal),
+	 //.is_collision1(is_collision1),//
+	 //.is_collision2(is_collision2),//
+	 .is_collision(is_collision_1),
+	 .X(BallX),
+	 .Y(BallY),
+	 .x_step(xstep),//speed of ball
+	 .y_step(ystep),//speed of ball
+	 .size(ballsize),// size of ball
+	 .escore(escore1)
 	 );
+	 
+	 
+	 enemy_ball2 enemy2(
+	 
+	 .Clk(Clk),         
+	 .Reset(Reset_b),       
+	 .frame_clk(VGA_VS),   
+	 .DrawX(DrawX),
+	 .DrawY(DrawY),
+	 .is_eball(is_eball2),
+	 .gameover(gameover2),//
+	 .is_collision(is_collision_2),
+	 //.is_collision1(is_collision1),//
+	 //.is_collision2(is_collision2),//
+	 .X(BallX),
+	 .Y(BallY),
+	 .x_step(xstep),//speed of ball
+	 .y_step(ystep),//speed of ball
+	 .size(ballsize),// size of ball
+	  .start_signal(start_signal),
+	 .escore(escore2)
+	 );
+	 
+	 enemy_ball3 enemy3(
+	 
+	 .Clk(Clk),         
+	 .Reset(Reset_b),       
+	 .frame_clk(VGA_VS),   
+	 .DrawX(DrawX),
+	 .DrawY(DrawY),
+	 .is_eball(is_eball3),
+	 .gameover(gameover3),//
+	 .start_signal(start_signal),
+	 .is_collision(is_collision_3),
+	 //.is_collision1(is_collision1),//
+	 //.is_collision2(is_collision2),//
+	 .X(BallX),
+	 .Y(BallY),
+	 .x_step(xstep),//speed of ball
+	 .y_step(ystep),//speed of ball
+	 .size(ballsize),// size of ball
+	 .escore(escore3)
+	 );
+
     
+	 
+	  AIball aiball_instance(
+	 
+	 .Clk(Clk),         
+	 .Reset(Reset_b),       
+	 .frame_clk(VGA_VS),   
+	 .DrawX(DrawX),
+	 .DrawY(DrawY),
+	 .BallX(BallX),//
+	 .BallY(BallY),//
+	 //.is_collision(is_collision),
+	 .keycode(keycode),
+	 .is_aiball(is_aiball),
+	 .size(ballsize)
+	 );
+	 
     color_mapper color_instance(
+	 	.Reset(Reset_b),       
+	.frame_clk(VGA_VS),
 	 .is_ball(is_ball),  
 	 .is_rball(is_rball),
 	 .DrawX(DrawX),
 	 .DrawY(DrawY),      
 	 .VGA_R(VGA_R),
 	 .VGA_G(VGA_G),
-	 .VGA_B(VGA_B)
+	 .VGA_B(VGA_B),
+	 //.progress(progress),//
+	 .BallX(BallX),//
+	 .BallY(BallY),//
+	 .is_aiball(is_aiball),
+	 .is_eball1(is_eball1),
+	 .is_eball2(is_eball2),
+	 .is_eball3(is_eball3),
+
+	 .start_signal(start_signal),
+	 .gameover_signal(gameover_signal),
+	 .ingame_signal(ingame_signal),
+	 //mouse
+	 .mouse_x(mouse_x),
+	 .mouse_y(mouse_y),
+
 	 );
 	 random_ball randomball( .Clk(Clk),                // 50 MHz clock
                              .Reset(Reset_b),              // Active-high reset signal
                              .frame_clk(VGA_VS), // The clock indicating a new frame (~60Hz)
 					.is_ball(is_ball),
-					//.Size(ball_size),
+					
 					.randomx(RandomX),
 					.randomy(RandomY),
                .DrawX(DrawX) ,
-					.is_collision(is_collision),
+					.is_collision1(is_collision1),
+					.is_collision2(is_collision2),
                .DrawY(DrawY) ,					// Current pixel coordinates
                .is_rball(is_rball),            // Whether current pixel belongs to ball or backgr
 				   .BallX(BallX),//
-					.BallY(BallY)//
+					.BallY(BallY),//
+					.rscore(rscore),
+					 .start_signal(start_signal)
               );
+				  
+		gamestate fsm(
+		      .Clk(Clk),
+				.keycode(keycode),//from keyboard
+				.gameover(gameover),
+				.Reset(Reset_b),//reset ball signal
+				.start_signal(start_signal),
+				.gameover_signal(gameover_signal),
+	         .ingame_signal(ingame_signal),
+		   	.mouse_x(mouse_x),
+				.mouse_y(mouse_y),
+				.leftButton(leftButton),
+				.rightButton(rightButton)
+
+				);		
+			
+	VGA_Audio_PLL 	p1 (
+	.areset(reset_h),
+	.inclk0(CLOCK_27),
+	.c1(AUD_CTRL_CLK)
+);
+assign	AUD_ADCLRCK	=	AUD_DACLRCK;
+assign	AUD_XCK		=	AUD_CTRL_CLK;
+
+audio_clock clock(
+   .AUD_BCLK,
+   .AUD_DACLRCK,
+   .AUD_CTRL_CLK,
+   .reset(reset_h)
+);
+audio_converter audio(
+	.AUD_BCLK,       // Audio bit clock
+	.AUD_DACLRCK, // left-right clock
+	.AUD_ADCDAT,
+	.AUD_DACDAT,
+	.reset(~reset_h),  // reset
+	.audio_outL,
+	.audio_outR,
+	.AUD_inL(audio_inL),
+	.AUD_inR(audio_inR)
+);
+logic [7:0] index,delta_index;
+logic [15:0] audio_inL, audio_inR;
+logic [15:0] audio_outL, audio_outR, sine_out,audio_outR0,audio_outR1;
+piano_table piano(
+	.index(index),
+	.signal(sine_out)
+);
+assign	audio_outR0 = sine_out;
+assign	audio_outR1 = 16'h0;
+assign		audio_outR = audio_outR0+audio_outR1;	
+assign		audio_outL = audio_outR0+audio_outR1;	
+
+always_ff @(posedge AUD_DACLRCK or posedge reset_h)
+	if (reset_h) 
+	begin
+		index <= 0;
+		counter <= 6'b111111;
+	end
+	else 
+	begin
+		index <= index + delta_index;
+	//	counter <= counter - 1
+	end
+//offset -> delta_index
+
+
+always_comb
+begin
+	if(is_collision1)
+		delta_index = 8'd2;
+	else if(is_collision2)
+		delta_index = 8'd3;
+	else if(is_collision_1)
+		delta_index = 8'd4;
+	else if(is_collision_2)
+		delta_index = 8'd5;
+	else if(is_collision_3)
+		delta_index = 8'd6;
+	else 
+		delta_index = 8'd0;
+end
+
+
+
+	
+				  
 	LFSRX lfsrx(
     .Clk(Clk),
     .Reset(Reset_b),
@@ -187,6 +410,20 @@ module lab8( input               CLOCK_50,
     .Reset(Reset_b),
     .RandomY(RandomY) 
     );
+	 //mouse 
+	 
+	 Mouse_interface mouse(	
+				.CLOCK_50(Clk),
+				.KEY(KEY),
+				.PS2_CLK(PS2_CLK),
+				.PS2_DAT(PS2_DAT),
+				.leftButton(leftButton),
+				//middleButton, 
+				.rightButton(rightButton),
+				.cursorX(mouse_x), 
+				.cursorY(mouse_y)
+				);
+ 
  
 //	collision collision1( .Clk(Clk),                // 50 MHz clock
 //                             .Reset(Reset),              // Active-high reset signal
@@ -196,10 +433,119 @@ module lab8( input               CLOCK_50,
 //	 .is_collision(is_collision)
 //              );
     // Display keycode on hex display
-    HexDriver hex_inst_0 (keycode[3:0], HEX0);
-    HexDriver hex_inst_1 (keycode[7:4], HEX1);
-	 HexDriver hex_inst_2 (keycode[11:8], HEX2);
-    HexDriver hex_inst_3 (keycode[15:12], HEX3);
+	 
+	 logic [15:0] score,score_next;
+	 
+//	 always_ff @ (posedge Clk)
+//    begin
+//		if(Reset)
+//			score <= 0;
+//		else if (score[3:0] == 4'b1010)
+//			begin
+//				score <= score +1;
+	 always_comb
+	 begin
+	 
+	 if(start_signal)
+	 begin
+		score = 16'b0;
+	 end
+	 else if(ingame_signal)
+	 begin
+		score = escore + rscore;
+		
+		if(score == 16'h000A)
+			score = 16'h0010;
+		else if (score == 16'h000b)
+			score = 16'h0011;
+		else if (score == 16'h000c)
+			score = 16'h0012;
+		else if (score == 16'h000d)
+			score = 16'h0013;
+		else if (score == 16'h000E)
+			score = 16'h0014;
+		else if (score == 16'h000F)
+			score = 16'h0015;
+		else if (score == 16'h0010)
+			score = 16'h0016;
+		else if (score == 16'h0011)
+			score = 16'h0017;
+		else if (score == 16'h0012)
+			score = 16'h0018;
+		else if (score == 16'h0013)
+			score = 16'h0019;
+		else if (score == 16'h0014)
+			score = 16'h0020;
+		else if (score == 16'h0015)
+			score = 16'h0021;
+		else if (score == 16'h0016)
+			score = 16'h0022;
+		else if (score == 16'h0017)
+			score = 16'h0023;
+		else if (score == 16'h0018)
+			score = 16'h0024;
+		else if (score == 16'h0019)
+			score = 16'h0025;
+		else if (score == 16'h001A)
+			score = 16'h0026;
+		else if (score == 16'h001b)
+			score = 16'h0027;
+		else if (score == 16'h001c)
+			score = 16'h0028;
+		else if (score == 16'h001e)
+			score = 16'h0029;
+		else if (score == 16'h001d)
+			score = 16'h0030;
+		else if (score == 16'h001E)
+			score = 16'h0031;
+		else if (score == 16'h001F)
+			score = 16'h0032;
+		else if (score == 16'h0020)
+			score = 16'h0033;
+		else if (score == 16'h0021)
+			score = 16'h0034;
+		else if (score == 16'h0022)
+			score = 16'h0035;
+		else if (score == 16'h0023)
+			score = 16'h0036;
+		else if (score == 16'h0024)
+			score = 16'h0037;
+		else if (score == 16'h0025)
+			score = 16'h0038;
+		else if (score == 16'h0026)
+			score = 16'h0039;
+		else if (score == 16'h0027)
+			score = 16'h0040;
+		else if (score == 16'h0028)
+			score = 16'h0041;
+		else if (score == 16'h0029)
+			score = 16'h0042;
+		else if (score == 16'h002a)
+			score = 16'h0043;
+		else if (score == 16'h002b)
+			score = 16'h0044;
+		else if (score == 16'h002c)
+			score = 16'h0045;
+		else if (score == 16'h002d)
+			score = 16'h0046;
+		else if (score == 16'h002e)
+			score = 16'h0047;
+		else if (score == 16'h002f)
+			score = 16'h0048;
+		else if (score == 16'h0030)
+			score = 16'h0049;
+	 end	
+	 
+	 else 
+	 score = 16'b1000100010001000;
+	 
+	 end
+	 
+    HexDriver hex_inst_0 (score[3:0], HEX0);
+    HexDriver hex_inst_1 (score[7:4], HEX1);
+	 HexDriver hex_inst_2 (score[11:8], HEX2);
+    HexDriver hex_inst_3 (score[15:12], HEX3);
+	 
     
     /**************************************************************************************
         ATTENTION! Please answer the following quesiton in your lab report! Points will be allocated for the answers!

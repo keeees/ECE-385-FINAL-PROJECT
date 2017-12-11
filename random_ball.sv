@@ -5,13 +5,16 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 					input [9:0] BallX,BallY,
 					input [9:0] randomx,
 					input [9:0] randomy,
+					input start_signal,
                     input [9:0]   DrawX ,
                     input [9:0]   DrawY ,					// Current pixel coordinates
 					   //input    isCollision[0:15],
 						//input [9:0] Size,
-						output logic is_collision,
+						output logic is_collision1,
+						output logic is_collision2,
 						//output logic  is_rball 
-                  output logic  is_rball[0:15]             // Whether current pixel belongs to ball or background
+                  output logic  is_rball[0:15],             // Whether current pixel belongs to ball or background
+						output logic[15:0] rscore
               );
     
 
@@ -100,40 +103,44 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 //      Ball_Y_Pos <=10'd20 ;
             Ball_X_Pos[0] <=150 ;  
             Ball_Y_Pos[0] <=300 ;
-            Ball_X_Pos[1] <=12 ;  
-            Ball_Y_Pos[1] <=7 ;
+            Ball_X_Pos[11] <=12 ;  
+            Ball_Y_Pos[11] <=7 ;
             Ball_X_Pos[2] <=17 ;  
             Ball_Y_Pos[2] <=58 ;
-            Ball_X_Pos[3] <=45 ;  
-            Ball_Y_Pos[3] <=69 ;
+            Ball_X_Pos[13] <=45 ;  
+            Ball_Y_Pos[13] <=69 ;
             Ball_X_Pos[4] <=66 ;  
             Ball_Y_Pos[4] <=88 ;
-            Ball_X_Pos[5] <=77 ;  
-            Ball_Y_Pos[5] <=92 ;
+            Ball_X_Pos[15] <=77 ;  
+            Ball_Y_Pos[15] <=92 ;
             Ball_X_Pos[6] <=89 ;  
             Ball_Y_Pos[6] <=120 ;
-            Ball_X_Pos[7] <=100 ;  
-            Ball_Y_Pos[7] <=130 ;
+            Ball_X_Pos[10] <=100 ;  
+            Ball_Y_Pos[10] <=130 ;
             Ball_X_Pos[8] <=200 ;  
             Ball_Y_Pos[8] <=66 ;
             Ball_X_Pos[9] <=300 ;  
             Ball_Y_Pos[9] <=99 ;
-            Ball_X_Pos[10] <=400 ;  
-            Ball_Y_Pos[10] <=89 ;
-            Ball_X_Pos[11] <=455 ;  
-            Ball_Y_Pos[11] <=300 ;
+            Ball_X_Pos[1] <=400 ;  
+            Ball_Y_Pos[1] <=89 ;
+            Ball_X_Pos[3] <=455 ;  
+            Ball_Y_Pos[3] <=300 ;
             Ball_X_Pos[12] <=543 ;  
             Ball_Y_Pos[12] <=400 ;
-            Ball_X_Pos[13] <=602 ;  
-            Ball_Y_Pos[13] <=38 ;
+            Ball_X_Pos[5] <=602 ;  
+            Ball_Y_Pos[5] <=38 ;
             Ball_X_Pos[14] <=625 ;  
             Ball_Y_Pos[14] <=5 ;
-            Ball_X_Pos[15] <=644 ;  
-            Ball_Y_Pos[15] <=79 ;
+            Ball_X_Pos[7] <=644 ;  
+            Ball_Y_Pos[7] <=79 ;
 				bSize <= 4;
+				rscore<= 0;
 				end
+			
+	
+	
 				
-		  else if(frame_clk_rising_edge && is_collision)
+		  else if(frame_clk_rising_edge && is_collision1)
 		  begin
 		  Ball_X_Pos[0]  <= Ball_X_Pos_in[0];
         Ball_Y_Pos[0]  <= Ball_Y_Pos_in[0];
@@ -167,10 +174,86 @@ module  random_ball ( input         Clk,                // 50 MHz clock
         Ball_Y_Pos[14] <= Ball_Y_Pos_in[14];
         Ball_X_Pos[15] <= Ball_X_Pos_in[15];
         Ball_Y_Pos[15] <= Ball_Y_Pos_in[15];
+		  rscore = rscore +1;
+		  if(bSize != 10)
 		  bSize <= bSize + 1;
-		  if( bSize == 6'b100000)
-    	  bSize <= 4;
-  		  end	
+		  end
+
+		  else if(frame_clk_rising_edge && is_collision2)
+		  begin
+		  Ball_X_Pos[0]  <= Ball_X_Pos_in[0];
+        Ball_Y_Pos[0]  <= Ball_Y_Pos_in[0];
+        Ball_X_Pos[1]  <= Ball_X_Pos_in[1];
+        Ball_Y_Pos[1]  <= Ball_Y_Pos_in[1];
+        Ball_X_Pos[2]  <= Ball_X_Pos_in[2];
+        Ball_Y_Pos[2]  <= Ball_Y_Pos_in[2];
+        Ball_X_Pos[3]  <= Ball_X_Pos_in[3];
+        Ball_Y_Pos[3]  <= Ball_Y_Pos_in[3];
+        Ball_X_Pos[4]  <= Ball_X_Pos_in[4];
+        Ball_Y_Pos[4]  <= Ball_Y_Pos_in[4];
+        Ball_X_Pos[5]  <= Ball_X_Pos_in[5];
+        Ball_Y_Pos[5]  <= Ball_Y_Pos_in[5];
+        Ball_X_Pos[6]  <= Ball_X_Pos_in[6];
+        Ball_Y_Pos[6]  <= Ball_Y_Pos_in[6];
+        Ball_X_Pos[7]  <= Ball_X_Pos_in[7];
+        Ball_Y_Pos[7]  <= Ball_Y_Pos_in[7];
+        Ball_X_Pos[8]  <= Ball_X_Pos_in[8];
+        Ball_Y_Pos[8]  <= Ball_Y_Pos_in[8];
+        Ball_X_Pos[9]  <= Ball_X_Pos_in[9];
+        Ball_Y_Pos[9]  <= Ball_Y_Pos_in[9];
+        Ball_X_Pos[10] <= Ball_X_Pos_in[10];
+        Ball_Y_Pos[10] <= Ball_Y_Pos_in[10];
+        Ball_X_Pos[11] <= Ball_X_Pos_in[11];
+        Ball_Y_Pos[11] <= Ball_Y_Pos_in[11];
+        Ball_X_Pos[12] <= Ball_X_Pos_in[12];
+        Ball_Y_Pos[12] <= Ball_Y_Pos_in[12];
+        Ball_X_Pos[13] <= Ball_X_Pos_in[13];
+        Ball_Y_Pos[13] <= Ball_Y_Pos_in[13];
+        Ball_X_Pos[14] <= Ball_X_Pos_in[14];
+        Ball_Y_Pos[14] <= Ball_Y_Pos_in[14];
+        Ball_X_Pos[15] <= Ball_X_Pos_in[15];
+        Ball_Y_Pos[15] <= Ball_Y_Pos_in[15];
+		  rscore = rscore +1;
+		  if(bSize != 1)
+		  bSize <= bSize - 1;
+		  end
+		  
+		  else if(frame_clk_rising_edge && start_signal)
+		  begin
+		  Ball_X_Pos[0]  <= Ball_X_Pos_in[0];
+        Ball_Y_Pos[0]  <= Ball_Y_Pos_in[0];
+        Ball_X_Pos[1]  <= Ball_X_Pos_in[1];
+        Ball_Y_Pos[1]  <= Ball_Y_Pos_in[1];
+        Ball_X_Pos[2]  <= Ball_X_Pos_in[2];
+        Ball_Y_Pos[2]  <= Ball_Y_Pos_in[2];
+        Ball_X_Pos[3]  <= Ball_X_Pos_in[3];
+        Ball_Y_Pos[3]  <= Ball_Y_Pos_in[3];
+        Ball_X_Pos[4]  <= Ball_X_Pos_in[4];
+        Ball_Y_Pos[4]  <= Ball_Y_Pos_in[4];
+        Ball_X_Pos[5]  <= Ball_X_Pos_in[5];
+        Ball_Y_Pos[5]  <= Ball_Y_Pos_in[5];
+        Ball_X_Pos[6]  <= Ball_X_Pos_in[6];
+        Ball_Y_Pos[6]  <= Ball_Y_Pos_in[6];
+        Ball_X_Pos[7]  <= Ball_X_Pos_in[7];
+        Ball_Y_Pos[7]  <= Ball_Y_Pos_in[7];
+        Ball_X_Pos[8]  <= Ball_X_Pos_in[8];
+        Ball_Y_Pos[8]  <= Ball_Y_Pos_in[8];
+        Ball_X_Pos[9]  <= Ball_X_Pos_in[9];
+        Ball_Y_Pos[9]  <= Ball_Y_Pos_in[9];
+        Ball_X_Pos[10] <= Ball_X_Pos_in[10];
+        Ball_Y_Pos[10] <= Ball_Y_Pos_in[10];
+        Ball_X_Pos[11] <= Ball_X_Pos_in[11];
+        Ball_Y_Pos[11] <= Ball_Y_Pos_in[11];
+        Ball_X_Pos[12] <= Ball_X_Pos_in[12];
+        Ball_Y_Pos[12] <= Ball_Y_Pos_in[12];
+        Ball_X_Pos[13] <= Ball_X_Pos_in[13];
+        Ball_Y_Pos[13] <= Ball_Y_Pos_in[13];
+        Ball_X_Pos[14] <= Ball_X_Pos_in[14];
+        Ball_Y_Pos[14] <= Ball_Y_Pos_in[14];
+        Ball_X_Pos[15] <= Ball_X_Pos_in[15];
+        Ball_Y_Pos[15] <= Ball_Y_Pos_in[15];
+				rscore <= 0;
+  		  end
 		  
         else if (frame_clk_rising_edge)       
         begin
@@ -208,16 +291,10 @@ module  random_ball ( input         Clk,                // 50 MHz clock
         Ball_Y_Pos[14] <= Ball_Y_Pos_in[14];
         Ball_X_Pos[15] <= Ball_X_Pos_in[15];
         Ball_Y_Pos[15] <= Ball_Y_Pos_in[15];
-		  if( bSize == 6'b100000)
-    	  bSize <= 4;
         end            
-		      		     
-  
-      
+
  
     end
-	 
-
 
     
     always_comb
@@ -363,7 +440,8 @@ module  random_ball ( input         Clk,                // 50 MHz clock
         Ball_Y_Pos_in[14] = Ball_Y_Pos[14];
         Ball_X_Pos_in[15] = Ball_X_Pos[15];
         Ball_Y_Pos_in[15] = Ball_Y_Pos[15];
-		  is_collision = 0;
+		  is_collision1 = 0;
+		  is_collision2 = 0;
         
 
 
@@ -376,7 +454,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 		  
         Ball_X_Pos_in[0] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[0] <= {2'b0,randomy[7:0]};
-		  is_collision = 1;
+		  is_collision1 = 1;
 		  
 		  end
 		  
@@ -386,7 +464,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
         Ball_X_Pos_in[1] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[1] <= {2'b0,randomy[7:0]};
 		  //is_rball[1] = 1'b0;
-		  is_collision = 1;
+		  is_collision1 = 1;
 		  end
 		  
 		 
@@ -396,7 +474,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
         Ball_X_Pos_in[2] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[2] <= {2'b0,randomy[7:0]};
 		  //is_rball[2] = 1'b0;
-		  is_collision = 1;
+		  is_collision1 = 1;
 		  end
 		  
 		 
@@ -405,7 +483,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 		  
         Ball_X_Pos_in[3] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[3] <= {2'b0,randomy[7:0]};
-		  is_collision = 1;
+		  is_collision1 = 1;
 		  end
 		  
 		  
@@ -414,7 +492,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 		  
         Ball_X_Pos_in[4] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[4] <= {2'b0,randomy[7:0]};
-		  is_collision = 1;
+		  is_collision1 = 1;
 		  end
 		  
 		  
@@ -423,7 +501,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 		  
         Ball_X_Pos_in[5] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[5] <= {2'b0,randomy[7:0]};
-		  is_collision = 1;
+		  is_collision1 = 1;
 		  end
 		  
 		  
@@ -432,7 +510,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 		  
         Ball_X_Pos_in[6] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[6] <= {2'b0,randomy[7:0]};
-		  is_collision = 1;
+		  is_collision1 = 1;
 		  end
 		 
 		  if(((BallX - Ball_X_Pos[7])*(BallX - Ball_X_Pos[7]) + (BallY - Ball_Y_Pos[7])*(BallY - Ball_Y_Pos[7])) <= ((4+bSize)*(4+bSize)))
@@ -440,7 +518,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 		  
         Ball_X_Pos_in[7] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[7] <= {2'b0,randomy[7:0]};
-		  is_collision = 1;
+		  is_collision1 = 1;
 		  end
 		  
 		  
@@ -449,7 +527,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 		  
         Ball_X_Pos_in[8] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[8] <= {2'b0,randomy[7:0]};
-		  is_collision = 1;
+		  is_collision2 = 1;
 		  end
 		  
 		 
@@ -458,7 +536,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 		  
         Ball_X_Pos_in[9] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[9] <= {2'b0,randomy[7:0]};
-		  is_collision = 1;
+		  is_collision2 = 1;
 		  end
 		  
 		 
@@ -467,7 +545,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 		  
         Ball_X_Pos_in[10] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[10] <= {2'b0,randomy[7:0]};
-		  is_collision = 1;
+		  is_collision2 = 1;
 		  end
 		  
 		  //if(is_ball == 1 && is_rball[11] == 1)
@@ -476,7 +554,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 		  
         Ball_X_Pos_in[11] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[11] <= {2'b0,randomy[7:0]};
-		  is_collision = 1;
+		  is_collision2 = 1;
 		  end
 		  
 		
@@ -485,7 +563,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 		  
         Ball_X_Pos_in[12] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[12] <= {2'b0,randomy[7:0]};
-		  is_collision = 1;
+		  is_collision2 = 1;
 		  end
 		  
 		  
@@ -494,7 +572,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 		  
         Ball_X_Pos_in[13] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[13] <= {2'b0,randomy[7:0]};
-		  is_collision = 1;
+		  is_collision2 = 1;
 		  end
 		  
 		  
@@ -502,7 +580,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
         begin
         Ball_X_Pos_in[14] <= {1'b0,randomx[8:0]};
         Ball_Y_Pos_in[14] <= {2'b0,randomy[7:0]};
-		  is_collision = 1;
+		  is_collision2 = 1;
 		  end
 		  
 		 
@@ -511,7 +589,7 @@ module  random_ball ( input         Clk,                // 50 MHz clock
 		  
         Ball_X_Pos_in[15] <= randomx;
         Ball_Y_Pos_in[15] <= randomy;
-		  is_collision = 1;
+		  is_collision2 = 1;
         end
 		  
 		 

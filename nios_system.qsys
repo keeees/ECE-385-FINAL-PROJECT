@@ -41,6 +41,22 @@
          type = "int";
       }
    }
+   element clk_1
+   {
+      datum _sortIndex
+      {
+         value = "13";
+         type = "int";
+      }
+   }
+   element clk_1.clk_in
+   {
+      datum _tags
+      {
+         value = "";
+         type = "String";
+      }
+   }
    element jtag_uart_0
    {
       datum _sortIndex
@@ -208,6 +224,14 @@
          type = "boolean";
       }
    }
+   element sdram_pll.locked_conduit
+   {
+      datum _tags
+      {
+         value = "";
+         type = "String";
+      }
+   }
    element sdram_pll.pll_slave
    {
       datum baseAddress
@@ -254,6 +278,7 @@
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
+ <interface name="clk_1" internal="clk_1.clk" type="clock" dir="start" />
  <interface
    name="keycode"
    internal="Keycode.external_connection"
@@ -305,6 +330,12 @@
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
+  <parameter name="resetSynchronousEdges" value="NONE" />
+ </module>
+ <module name="clk_1" kind="clock_source" version="15.0" enabled="1">
+  <parameter name="clockFrequency" value="27000000" />
+  <parameter name="clockFrequencyKnown" value="true" />
+  <parameter name="inputClockFrequency" value="50000000" />
   <parameter name="resetSynchronousEdges" value="NONE" />
  </module>
  <module
@@ -940,6 +971,7 @@
    version="15.0"
    start="clk_0.clk"
    end="onchip_memory2_0.clk1" />
+ <connection kind="clock" version="15.0" start="clk_0.clk" end="clk_1.clk_in" />
  <connection
    kind="clock"
    version="15.0"
@@ -952,6 +984,11 @@
    end="jtag_uart_0.irq">
   <parameter name="irqNumber" value="5" />
  </connection>
+ <connection
+   kind="reset"
+   version="15.0"
+   start="clk_0.clk_reset"
+   end="clk_1.clk_in_reset" />
  <connection
    kind="reset"
    version="15.0"
@@ -1008,6 +1045,11 @@
    version="15.0"
    start="clk_0.clk_reset"
    end="nios2_qsys_0.reset_n" />
+ <connection
+   kind="reset"
+   version="15.0"
+   start="nios2_qsys_0.jtag_debug_module_reset"
+   end="clk_1.clk_in_reset" />
  <connection
    kind="reset"
    version="15.0"
